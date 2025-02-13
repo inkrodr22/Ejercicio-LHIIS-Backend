@@ -18,8 +18,7 @@ console.log('Documentación disponible en https://ejercicio-lhiis-backend-produc
 
 
 app.get('/', (req, res) => {
-    res.send('API funcionando correctamente');
-    res.send('Documentación disponible en https://ejercicio-lhiis-backend-production.up.railway.app/api-docs/')
+    res.send('API funcionando correctamente. Documentación disponible en https://ejercicio-lhiis-backend-production.up.railway.app/api-docs/');
 });
 
 // Rutas
