@@ -14,11 +14,12 @@ app.use(express.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-console.log("Documentación disponible en: http://localhost:3000/api-docs");
+console.log('Documentación disponible en https://ejercicio-lhiis-backend-production.up.railway.app/api-docs/');
 
 
 app.get('/', (req, res) => {
     res.send('API funcionando correctamente');
+    res.send('Documentación disponible en https://ejercicio-lhiis-backend-production.up.railway.app/api-docs/')
 });
 
 // Rutas

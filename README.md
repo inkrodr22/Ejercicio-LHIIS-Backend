@@ -56,6 +56,7 @@ DB_HOST=
 DB_USER=
 DB_PASSWORD=
 DB_NAME=
+DB_PORT=
 PORT=
 ```
 
@@ -93,7 +94,7 @@ npm test
 ## Documentación en Swagger
 Para acceder a la documentación de la API:
 Inicia el servidor (`npm start`)
-Visita en tu navegador: `http://localhost:3000/api-docs`
+Visita en tu navegador: `https://ejercicio-lhiis-backend-production.up.railway.app/api-docs/`
 
 ## Autores y Contribución
 Proyecto desarrollado por Iñaki Rodriguez Morales.
