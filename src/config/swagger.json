@@ -1,0 +1,193 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Usuarios y Transacciones",
+    "version": "1.0.0",
+    "description": "API para la gestión de usuarios y transacciones en el sistema.",
+    "contact": {
+      "name": "Iñaki Rodriguez",
+      "email": "rodriguezm.ink@gmail.com"
+    }
+  },
+  "paths": {
+    "/api/usuarios": {
+      "get": {
+        "summary": "Obtener todos los usuarios",
+        "tags": ["Usuarios"],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Usuario" }
+                }
+              }
+            }
+          },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "post": {
+        "summary": "Crear un nuevo usuario",
+        "tags": ["Usuarios"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Usuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuario creado con éxito" },
+          "400": { "description": "Todos los campos son obligatorios" },
+          "500": { "description": "Error en la base de datos" }
+        }
+      }
+    },
+    "/api/usuarios/{RFC}": {
+      "get": {
+        "summary": "Obtener un usuario por RFC",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "name": "RFC",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuario encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Usuario" } } } },
+          "404": { "description": "Usuario no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
+    },
+    "/api/usuarios/{RFC}/bloquear": {
+      "put": {
+        "summary": "Bloquear un usuario",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "name": "RFC",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuario bloqueado con éxito" },
+          "404": { "description": "Usuario no encontrado" },
+          "400": { "description": "El usuario ya está bloqueado" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
+    },
+    "/api/usuarios/{id}": {
+      "delete": {
+        "summary": "Eliminar un usuario por ID",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuario eliminado correctamente" },
+          "404": { "description": "Usuario no encontrado" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
+    },
+    "/api/transacciones": {
+      "get": {
+        "summary": "Obtener todas las transacciones con filtros",
+        "tags": ["Transacciones"],
+        "parameters": [
+          { "name": "fechaInicio", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "fechaFin", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "RFC", "in": "query", "schema": { "type": "string" } },
+          { "name": "folio", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["PENDING", "FAILED", "COMPLETED"] } }
+        ],
+        "responses": {
+          "200": { "description": "Lista de transacciones", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Transaccion" } } } } },
+          "500": { "description": "Error del servidor" }
+        }
+      },
+      "post": {
+        "summary": "Crear una nueva transacción",
+        "tags": ["Transacciones"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Transaccion" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Transacción creada con éxito" },
+          "400": { "description": "Todos los campos son obligatorios" },
+          "403": { "description": "Usuario bloqueado" },
+          "404": { "description": "Usuario no encontrado" },
+          "500": { "description": "Error en la base de datos" }
+        }
+      }
+    },
+    "/api/transacciones/{id}/status": {
+      "put": {
+        "summary": "Actualizar el estado de una transacción",
+        "tags": ["Transacciones"],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "properties": { "status": { "type": "string", "enum": ["FAILED", "COMPLETED"] } } }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Estado actualizado correctamente" },
+          "400": { "description": "Solo se pueden actualizar transacciones en estado PENDING" },
+          "500": { "description": "Error del servidor" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "RFC": { "type": "string" },
+          "nombre": { "type": "string" },
+          "apellidos": { "type": "string" },
+          "status": { "type": "string", "enum": ["ACTIVE", "LOCKED"] }
+        }
+      },
+      "Transaccion": {
+        "type": "object",
+        "properties": {
+          "RFC": { "type": "string" },
+          "fechaRetiro": { "type": "string", "format": "date" },
+          "monto": { "type": "number" },
+          "comision": { "type": "number" },
+          "status": { "type": "string", "enum": ["PENDING", "FAILED", "COMPLETED"] },
+          "folio": { "type": "string" }
+        }
+      }
+    }
+  }
+}
